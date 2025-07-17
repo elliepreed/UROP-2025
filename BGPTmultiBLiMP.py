@@ -132,7 +132,7 @@ for fn in sorted(pair_files):
     total = len(df_with_scores)
     accuracy = correct_better / total
 
-    print(f"Accuracy: {accuracy:.3f} ({correct_better}/{total})")
+    print(f"Accuracy: {accuracy * 100:.2f}% ({correct_better}/{total})")
 
     # Save scored dataframe
     phenomenon_lang = fn.split(os.sep)[-3:-1]  # Extract phenomenon and language
