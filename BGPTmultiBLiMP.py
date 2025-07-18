@@ -44,7 +44,7 @@ nld_df.to_csv(f"{base_dir}/{phenomenon}/dutch/{nld_condition}", sep="\t", index=
 # Load your B-GPT model and tokenizer
 model_name = "catherinearnett/B-GPT_en_nl_simultaneous"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, #revision = "0") #revision step if wanting to load data at a specific stage
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 model.eval()
@@ -89,10 +89,8 @@ def compute_sentence_nll_batch(sentences, model, tokenizer, device, batch_size=1
 
 def score_tse_batch(df, model, tokenizer, device):
     """Score all sentences in dataframe at once"""
-    # NOTE: Check your TSV columns here!
-    # Assuming columns named 'sentence_good' and 'sentence_bad'
-    correct_col = "sen"  # Update this to match your column names
-    wrong_col = "wrong_sen"     # Update this to match your column names
+    correct_col = "sen"  
+    wrong_col = "wrong_sen"    
 
     # Get all sentences
     correct_sentences = df[correct_col].tolist()
