@@ -1,3 +1,4 @@
+#L1 English, L2 Dutch, Simultaneous
 !pip install matplotlib
 
 import pandas as pd
@@ -82,6 +83,104 @@ plt.figure(figsize=(12, 6))
 sns.lineplot(data=df_melted, x="checkpoint", y="Accuracy",
              hue="Language", marker="o", palette=palette)
 plt.title("B-GPT Accuracy Over Training (English-Dutch, Simultaneous)", fontsize=16, fontweight='bold')
+plt.xlabel("Checkpoint", fontsize=14)
+plt.ylabel("MultiBLiMP 1.0 Accuracy", fontsize=14)
+plt.ylim(0.5, 1.0)
+plt.xticks(rotation=45)
+plt.legend(title="Language", title_fontsize='13', fontsize='12')
+plt.tight_layout()
+plt.savefig("B-GPT_en_nl_simultaneous.png")
+plt.show()
+
+
+
+#L1 English, L2 Spanish, Simultaneous 
+!pip install matplotlib
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+
+# Your data as a CSV string
+from io import StringIO
+
+#input the relevant data information for l1/l2 accuracy 
+data = !pip install matplotlib
+
+#input the relevant data information for l1/l2 accuracy 
+data = data = """checkpoint,l1_acc,l2_acc
+0,0.650649,0.640299
+10000,0.919481,0.687525
+20000,0.948052,0.691067
+30000,0.955844,0.691460
+40000,0.964935,0.700118
+50000,0.966234,0.702086
+64000,0.972727,0.699331
+64010,0.968831,0.723731
+64020,0.970130,0.735144
+64030,0.967532,0.733176
+64040,0.968831,0.737898
+64050,0.964935,0.744195
+64060,0.968831,0.743015
+64070,0.968831,0.750492
+64080,0.970130,0.754034
+64090,0.964935,0.756002
+64100,0.968831,0.754821
+64110,0.967532,0.759543
+64120,0.970130,0.754427
+64130,0.968831,0.766234
+64140,0.968831,0.761511
+64150,0.964935,0.765053
+64160,0.963636,0.766234
+64170,0.968831,0.766627
+64180,0.963636,0.768201
+64190,0.961039,0.772924
+64200,0.964935,0.776072
+64300,0.964935,0.801259
+64400,0.964935,0.800472
+64500,0.962338,0.810704
+64600,0.963636,0.814640
+64700,0.967532,0.821330
+64800,0.967532,0.827627
+64900,0.967532,0.828808
+65000,0.963636,0.827627
+66000,0.966234,0.855569
+67000,0.970130,0.863046
+68000,0.971429,0.874459
+69000,0.959740,0.878788
+70000,0.966234,0.886265
+80000,0.964935,0.920110
+90000,0.971429,0.927588
+100000,0.970130,0.935458
+110000,0.971429,0.934278
+120000,0.970130,0.939787
+128000,0.970130,0.936639
+"""
+
+
+
+df = pd.read_csv(StringIO(data))
+df_melted = df.melt(id_vars=["checkpoint"], value_vars=["l1_acc", "l2_acc"],
+                    var_name="Language", value_name="Accuracy")
+lang_map = {"l1_acc": "English (L1)", "l2_acc": "Spanish (L2)"} #edit for relevant languages 
+df_melted["Language"] = df_melted["Language"].map(lang_map)
+
+# Set font and colors
+rcParams['font.family'] = 'Times New Roman'
+
+# Custom color palette - edit for relevant languages 
+palette = {
+    "English (L1)": "#E86100",
+    "Spanish (L2)": "#00124B",
+}
+
+# Plot
+sns.set(style="whitegrid", font_scale=1.2)
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=df_melted, x="checkpoint", y="Accuracy",
+             hue="Language", marker="o", palette=palette)
+plt.title("B-GPT Accuracy Over Training (English-Spanish, Simultaneous)", fontsize=16, fontweight='bold')
 plt.xlabel("Checkpoint", fontsize=14)
 plt.ylabel("MultiBLiMP 1.0 Accuracy", fontsize=14)
 plt.ylim(0.5, 1.0)
