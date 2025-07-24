@@ -1,42 +1,25 @@
-import pandas as pd
-import os
-
-
-def score_tse(model, fn: str):
-    tse_df = pd.read_csv(fn, sep='\t')
-
-    tse_df["sen_prob"] = pd.Series(dtype=object).astype(object)
-    tse_df["wrong_prob"] = pd.Series(dtype=object).astype(object)
-
-    # Set max_length based on model context window (commonly 1024 or 2048)
-    max_length = 1024
-
-    for idx, row in tse_df.iterrows():
-        sen_prob, wrong_prob = score_pair(model, row.sen, row.wrong_sen, max_length)
-
-        sen_nll = -sen_prob.sum().item()
-        wrong_nll = -wrong_prob.sum().item()
-
-        tse_df.at[idx, "sen_prob"] = sen_prob.tolist()
-        tse_df.at[idx, "wrong_prob"] = wrong_prob.tolist()
-
-        tse_df.loc[idx, "sen_nll"] = sen_nll
-        tse_df.loc[idx, "wrong_nll"] = wrong_nll
-        tse_df.loc[idx, "delta"] = wrong_nll - sen_nll
-
-    return tse_df
-
-
 def score_pair(ilm_model, sen, wrong_sen, max_length=1024):
+    """
+    Score a correct vs incorrect sentence using an ILM model.
+    
+    Args:
+        ilm_model: An object with `.tokenizer` and `.sequence_score` method.
+        sen (str): Correct sentence.
+        wrong_sen (str): Incorrect sentence.
+        max_length (int): Max number of tokens allowed (default 1024).
+    
+    Returns:
+        A tuple of scores (correct_score, wrong_score).
+    """
     tokenizer = ilm_model.tokenizer
 
-    # Tokenize and truncate to max_length
-    sen_tokens = tokenizer.tokenize(sen)[:max_length]
-    wrong_tokens = tokenizer.tokenize(wrong_sen)[:max_length]
+    # Tokenize and truncate using token IDs
+    sen_ids = tokenizer.encode(sen, truncation=True, max_length=max_length)
+    wrong_ids = tokenizer.encode(wrong_sen, truncation=True, max_length=max_length)
 
-    # Reconstruct string from tokens
-    sen_trunc = tokenizer.convert_tokens_to_string(sen_tokens)
-    wrong_trunc = tokenizer.convert_tokens_to_string(wrong_tokens)
+    # Convert token IDs back to text (optional, if model expects text)
+    sen_trunc = tokenizer.decode(sen_ids, skip_special_tokens=True)
+    wrong_trunc = tokenizer.decode(wrong_ids, skip_special_tokens=True)
 
-    stimuli = [sen_trunc, wrong_trunc]
-    return ilm_model.sequence_score(stimuli, reduction=lambda x: x)
+    # Score both using ILM model
+    return ilm_model.sequence_score([sen_trunc, wrong_trunc], reduction=lambda x: x)
