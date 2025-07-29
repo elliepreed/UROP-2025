@@ -20,6 +20,10 @@ download_path = hf_hub_download(
     cache_dir="hf_cache",
 )
 
+comps_url = "https://raw.githubusercontent.com/kanishkamisra/comps/main/data/comps/comps_base.jsonl"
+comps_df = pd.read_json(comps_url, lines=True)
+
+
 nld_df = pd.read_parquet(download_path)
 
 # Save it to expected structure for evaluation
@@ -29,7 +33,9 @@ os.makedirs(f"{base_dir}/{phenomenon}/dutch", exist_ok=True)
 nld_condition = "condition1.tsv"
 output_path = f"{base_dir}/{phenomenon}/dutch/{nld_condition}"
 nld_df.to_csv(output_path, sep="\t", index=False)
-print("✅ Dutch evaluation file saved to:", output_path)
+
+os.makedirs(f"{base_dir}/{phenomenon}/english", exist_ok=True)
+eng_output_path = f"{base_dir}/{phenomenon}/english/condition1.tsv"
 
 # ============================================
 # Step 2: Evaluation setup
@@ -67,8 +73,8 @@ def compute_sentence_nll_batch(sentences, model, tokenizer, device, batch_size=1
     return all_nlls
 
 def score_tse_batch(df, model, tokenizer, device):
-    correct_col = "acceptable_sent"
-    wrong_col = "unacceptable_sent"
+    correct_col = "acceptable_concept"
+    wrong_col = "unacceptable_concept"
     correct_sentences = df[correct_col].tolist()
     wrong_sentences = df[wrong_col].tolist()
 
