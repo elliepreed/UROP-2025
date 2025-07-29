@@ -1,4 +1,4 @@
-!pip install transformers huggingface_hub pandas torch pyarrow --quiet
+!pip install transformers huggingface_hub pandas torch pyarrow 
 
 import os
 import pandas as pd
